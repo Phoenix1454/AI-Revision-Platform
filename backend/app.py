@@ -1,6 +1,9 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 from flask import request, jsonify
+from flask_cors import CORS
+from firebase_admin import firestore
+
 
 
 # Existing Flask imports
@@ -126,6 +129,28 @@ def generate_plan():
         })
 
         return jsonify({"message": "Revision plan generated successfully!", "plan": plan}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+CORS(app)
+
+@app.route('/getplans/<email>', methods=['GET'])
+def get_plans(email):
+    try:
+        plans_ref = db.collection('RevisionPlans')
+        query = plans_ref.where('email', '==', email).stream()
+
+        plans = []
+        for doc in query:
+            data = doc.to_dict()
+            data['id'] = doc.id
+            plans.append(data)
+
+        if not plans:
+            return jsonify({"message": "No plans found for this user"}), 404
+
+        return jsonify({"plans": plans}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
