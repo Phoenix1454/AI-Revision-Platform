@@ -1,0 +1,29 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+input, button {
+  margin: 5px 0;
+  padding: 8px;
+  width: 90%;
+  max-width: 400px;
+}
+
+button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #357ABD;
+}
+
+form {
+  margin-bottom: 20px;
+}
