@@ -16,9 +16,13 @@ app = Flask(__name__)
 CORS(app, origins=["https://ai-revision-platform.vercel.app", "https://ai-revision-platform-git-master-phoenix1454s-projects.vercel.app"])
 
 # Initialize Firebase Admin SDK with service account key
-cred = credentials.Certificate('serviceAccountKey.json')
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+google_creds_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+if google_creds_json:
+    creds_dict = json.loads(google_creds_json)
+    cred = credentials.Certificate(creds_dict)
+    firebase_admin.initialize_app(cred)
+else:
+    raise Exception("GOOGLE_APPLICATION_CREDENTIALS_JSON not found")
 
 @app.route('/')
 def home():
