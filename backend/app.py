@@ -133,7 +133,7 @@ def generate_plan():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-CORS(app)
+CORS(app, origins=["https://ai-revision-platform-git-master-phoenix1454s-projects.vercel.app"])
 
 @app.route('/getplans/<email>', methods=['GET'])
 def get_plans(email):
