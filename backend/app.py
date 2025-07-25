@@ -3,6 +3,12 @@ from firebase_admin import credentials, firestore
 from flask import request, jsonify
 from flask_cors import CORS
 from firebase_admin import firestore
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # take environment variables from .env.
+
+JWT_SECRET = os.getenv('JWT_SECRET')
 
 
 
