@@ -1,23 +1,21 @@
+import os
+import traceback
 import firebase_admin
 from firebase_admin import credentials, firestore
-from flask import request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-from firebase_admin import firestore
 from dotenv import load_dotenv
-import os
 
-load_dotenv()  # take environment variables from .env.
+# Load environment variables from .env file
+load_dotenv()
 
-JWT_SECRET = os.getenv('JWT_SECRET')
-
-
-
-# Existing Flask imports
-from flask import Flask
-
+# Initialize Flask app
 app = Flask(__name__)
 
-# Firebase initialization
+# Enable CORS for frontend URL (update if you deploy to a custom domain)
+CORS(app, origins=["https://ai-revision-platform.vercel.app", "https://ai-revision-platform-git-master-phoenix1454s-projects.vercel.app"])
+
+# Initialize Firebase Admin SDK with service account key
 cred = credentials.Certificate('serviceAccountKey.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
@@ -28,28 +26,31 @@ def home():
 
 @app.route('/testfirebase')
 def test_firebase():
-    users_ref = db.collection(u'Users')
-    users_ref.add({
-        u'name': u'Test User',
-        u'email': u'test@example.com'
-    })
-    return "Test user added to Firestore!"
+    try:
+        users_ref = db.collection(u'Users')
+        users_ref.add({
+            u'name': u'Test User',
+            u'email': u'test@example.com'
+        })
+        return "Test user added to Firestore!"
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/adduser', methods=['POST'])
 def add_user():
-    data = request.get_json()
-
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    name = data.get('name')
-    email = data.get('email')
-    subjects = data.get('subjects')  # Expecting a list of subjects and topics
-
-    if not name or not email or not subjects:
-        return jsonify({"error": "Missing name, email or subjects"}), 400
-
     try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
+        name = data.get('name')
+        email = data.get('email')
+        subjects = data.get('subjects')  # Expecting a list of subjects and topics
+
+        if not name or not email or not subjects:
+            return jsonify({"error": "Missing name, email or subjects"}), 400
+
         users_ref = db.collection('Users')
         users_ref.add({
             'name': name,
@@ -59,6 +60,7 @@ def add_user():
         return jsonify({"message": "User added successfully!"}), 200
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 @app.route('/getuser/<email>', methods=['GET'])
@@ -79,18 +81,19 @@ def get_user(email):
         return jsonify({"user": user_data}), 200
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 @app.route('/generateplan', methods=['POST'])
 def generate_plan():
-    data = request.get_json()
-    email = data.get('email')
-    days = data.get('days')
-
-    if not email or not days:
-        return jsonify({"error": "Missing email or days"}), 400
-
     try:
+        data = request.get_json()
+        email = data.get('email')
+        days = data.get('days')
+
+        if not email or not days:
+            return jsonify({"error": "Missing email or days"}), 400
+
         # Fetch user data
         users_ref = db.collection('Users')
         query = users_ref.where('email', '==', email).stream()
@@ -137,9 +140,8 @@ def generate_plan():
         return jsonify({"message": "Revision plan generated successfully!", "plan": plan}), 200
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-
-CORS(app, origins=["https://ai-revision-platform-git-master-phoenix1454s-projects.vercel.app"])
 
 @app.route('/getplans/<email>', methods=['GET'])
 def get_plans(email):
@@ -159,13 +161,9 @@ def get_plans(email):
         return jsonify({"plans": plans}), 200
 
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
-
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-
-
-
