@@ -25,7 +25,7 @@ function AddUser() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:5000/adduser', {
+      const response = await axios.post('https://ai-revision-platform.onrender.com/adduser', {
         name,
         email,
         subjects

@@ -11,7 +11,7 @@ function GeneratePlan() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:5000/generateplan', {
+      const response = await axios.post('https://ai-revision-platform.onrender.com/generateplan', {
         email,
         days: parseInt(days)
       });

@@ -10,7 +10,7 @@ function ViewPlans() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`http://127.0.0.1:5000/getplans/${email}`);
+      const response = await axios.get(`https://ai-revision-platform.onrender.com/getplans/${email}`);
       setPlans(response.data.plans);
       setMessage('');
     } catch (error) {
