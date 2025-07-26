@@ -13,15 +13,19 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 
-# Enable CORS for frontend URL (update if you deploy to a custom domain)
-CORS(app, origins=["https://ai-revision-platform.vercel.app", "https://ai-revision-platform-git-master-phoenix1454s-projects.vercel.app"])
+# Enable CORS for frontend URLs
+CORS(app, origins=[
+    "https://ai-revision-platform.vercel.app",
+    "https://ai-revision-platform-git-master-phoenix1454s-projects.vercel.app"
+])
 
-# Initialize Firebase Admin SDK with service account key
+# Initialize Firebase Admin SDK
 google_creds_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 if google_creds_json:
     creds_dict = json.loads(google_creds_json)
     cred = credentials.Certificate(creds_dict)
     firebase_admin.initialize_app(cred)
+    db = firestore.client()  # ✅ FIX: Firestore client
 else:
     raise Exception("GOOGLE_APPLICATION_CREDENTIALS_JSON not found")
 
@@ -51,7 +55,7 @@ def add_user():
 
         name = data.get('name')
         email = data.get('email')
-        subjects = data.get('subjects')  # Expecting a list of subjects and topics
+        subjects = data.get('subjects')
 
         if not name or not email or not subjects:
             return jsonify({"error": "Missing name, email or subjects"}), 400
@@ -134,7 +138,7 @@ def generate_plan():
             })
             index += num_topics
 
-        # Save to RevisionPlans collection
+        # Save to RevisionPlans
         plans_ref = db.collection('RevisionPlans')
         plans_ref.add({
             'email': email,
