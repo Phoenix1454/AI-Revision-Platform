@@ -6,6 +6,7 @@ from firebase_admin import credentials, firestore
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
+from ml import distribute_topics
 
 # Load environment variables from .env file
 load_dotenv()
@@ -124,19 +125,7 @@ def generate_plan():
                 })
 
         # Generate plan
-        plan = []
-        topics_per_day = len(all_topics) // days
-        remainder = len(all_topics) % days
-
-        index = 0
-        for i in range(days):
-            num_topics = topics_per_day + (1 if i < remainder else 0)
-            day_topics = all_topics[index:index + num_topics]
-            plan.append({
-                "day": i + 1,
-                "topics": day_topics
-            })
-            index += num_topics
+        plan = distribute_topics(all_topics, days)
 
         # Save to RevisionPlans
         plans_ref = db.collection('RevisionPlans')

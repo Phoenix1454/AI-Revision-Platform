@@ -32,6 +32,18 @@ frontend/
     ViewPlans.js     Displays saved plans
 ```
 
+## Testing
+
+Unit tests cover the plan-distribution logic (`backend/ml/distribute_topics`) — no Firebase credentials needed:
+
+```bash
+cd backend
+pip install pytest
+pytest tests/ -v
+```
+
+Tests run automatically on every push via [GitHub Actions](.github/workflows/tests.yml).
+
 ## Running locally
 
 ### Backend
