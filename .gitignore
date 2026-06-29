@@ -2,3 +2,4 @@
 # .gitignore
 .env
 backend/serviceAccountKey.json
+.DS_Store
